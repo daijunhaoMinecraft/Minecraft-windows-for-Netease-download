@@ -1,4 +1,5 @@
 # Minecraft-windows-for-Netease-download
+一个获取网易我的世界基岩版文件的直连工具-----
 前言 --------------------------
 之前误删掉了"windowsmc"的文件夹
 因此网易会自动补齐
