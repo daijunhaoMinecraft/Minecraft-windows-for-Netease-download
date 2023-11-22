@@ -1,3 +1,5 @@
+#此版本为1.0版本（release发不过去，因为懒得转exe）
+
 import webbrowser
 import requests
 import json
