@@ -28,7 +28,7 @@ res=json.loads(response.text)
 res1=res['entity']
 print("网易我的世界基岩版url获取器v1.1(By daijunhao),(github:daijunhaoMinecraft)")
 print("严禁倒卖!此软件仅供学习和交流使用,请在下载后24小时内删除")
-print("github链接：https://github.com/daijunhaoMinecraft/-windows-for-Netease-download")
+print("github链接：https://github.com/daijunhaoMinecraft/Minecraft-windows-for-Netease-download")
 print("返回代码:"+str(res['code']))
 print("返回值:"+res['message'])
 print("下载地址:"+res1['url'])
