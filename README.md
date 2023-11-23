@@ -13,7 +13,7 @@
 使用方法：
 先使用工具(release项目里面的exe文件,推荐下载最新版)下载Minecraft
 ![image](https://github.com/daijunhaoMinecraft/Minecraft-windows-for-Netease-download/assets/121751847/4d916fb8-b619-42ea-bb65-e664b9aaf381)
-下载完之后解压()v1.2版本使用第3个选项会自动解压
+下载完之后解压(v1.2版本使用第3个选项会自动解压)
 ![image](https://github.com/daijunhaoMinecraft/Minecraft-windows-for-Netease-download/assets/121751847/f10daec2-da75-46dc-bcef-717c9bb07a73)
 解压后是这样的文件：
 ![image](https://github.com/daijunhaoMinecraft/Minecraft-windows-for-Netease-download/assets/121751847/44d220b7-d66e-4126-b769-4e95bbebb8db)
