@@ -2,7 +2,7 @@
 项目代码
 使用Python写成
 使用Python运行需要安装requests库(pip install requests)
-若使用Wget下载请下载项目里面的Wget.exe并把他与此py文件放在一起,否则选择Wget的选项会报错
+若使用Wget下载请下载项目里面的wget.exe并把他与此py文件放在一起,否则选择Wget的选项会报错
 重要的事情说三遍：严禁倒卖！严禁倒卖！严禁倒卖！
 """
 import os
