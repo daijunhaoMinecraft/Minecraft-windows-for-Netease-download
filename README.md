@@ -10,7 +10,7 @@
 ![image](https://github.com/daijunhaoMinecraft/Minecraft-windows-for-Netease-download/assets/121751847/74b5a50e-e2aa-4b9d-a332-e8e51abcab63)
 所以我制作了这个工具（没什么难度，就是简单的发送post）
 此项目可以让你下载到网易我的世界基岩版的直连
-项目链接https://github.com/daijunhaoMinecraft/Minecraft-windows-for-Netease-download
+项目链接https://github.com/daijunhaoMinecraft/Minecraft-windows-for-Netease-download或https://gitee.com/dai-junhao-123/Minecraft-windows-for-Netease-download
 基于Python写出来的，同时里面包含Wget
 
 -----
