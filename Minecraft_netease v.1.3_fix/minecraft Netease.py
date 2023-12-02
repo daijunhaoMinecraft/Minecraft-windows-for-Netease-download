@@ -34,7 +34,7 @@ url = 'https://x19apigatewayobt.nie.netease.com/cpp-game-client-info'
 response = requests.post(url,data=data,headers=header)
 res=json.loads(response.text)
 res1=res['entity']
-print("网易我的世界基岩版url获取器v1.3_fix(By daijunhao),(github:daijunhaoMinecraft)")
+print("网易我的世界基岩版url获取器v1.3-fix(By daijunhao),(github:daijunhaoMinecraft)")
 print("更新内容：更新.checkInfo")
 print("严禁倒卖!此软件仅供学习和交流使用,请在下载后24小时内删除")
 print("github链接：https://github.com/daijunhaoMinecraft/Minecraft-windows-for-Netease-download")
