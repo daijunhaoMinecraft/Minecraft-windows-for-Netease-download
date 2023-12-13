@@ -120,4 +120,3 @@ ui.button('点我使用Wget下载并自动解压(默认保存路径为桌面)', 
 ui.label("警告！此按钮'重新安装基岩版文件/安装基岩版文件'可能会导致你的基岩版文件被替换成新的(如果你是没有安装的,则可以无视)").style('color:red;font-size:20px;font-weight:bold')
 ui.button('重新安装基岩版文件/安装基岩版文件', on_click=lambda e:ui.notify(Minecraft_For_Netease()))
 ui.run()
-
