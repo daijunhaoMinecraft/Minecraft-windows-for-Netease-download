@@ -8,11 +8,19 @@ import pyperclip3 as pycopy
 import webbrowser
 import time
 import os
-def windowsmc_path():
-    key = winreg.OpenKey(winreg.HKEY_CURRENT_USER, r'Software\Netease\MCLauncher')
-    path = winreg.QueryValueEx(key, "MinecraftBENeteasePath")[0]
-    return path
-windowsmc_path1 = windowsmc_path()
+from colorama import Fore,Back,Style,init
+init(autoreset=True)
+
+try:
+    def windowsmc_path():
+        key = winreg.OpenKey(winreg.HKEY_CURRENT_USER, r'Software\Netease\PC4399_MCLauncher')
+        path = winreg.QueryValueEx(key, "MinecraftBENeteasePath")[0]
+        return path
+    windowsmc_path1 = windowsmc_path()
+except FileNotFoundError as e:
+    print(Back.RED+"出错了,此程序5秒后退出:",e)
+    time.sleep(5)
+    exit()
 
 # 获取当前系统的桌面绝对路径
 def desktop_path():
@@ -23,7 +31,7 @@ desktop_path1 = desktop_path()
 
 class Frame(wx.Frame):
     def __init__(self):
-        wx.Frame.__init__(self, None, title='网易我的世界基岩版下载地址获取器v1.4(By daijunhao),(github:daijunhaoMinecraft),严禁倒卖!,更新内容请去github查看', size=(950, 670),name='frame',style=541072384)
+        wx.Frame.__init__(self, None, title='网易我的世界基岩版下载地址获取器v1.4_3(By daijunhao),(github:daijunhaoMinecraft),严禁倒卖!,更新内容请去github查看', size=(950, 670),name='frame',style=541072384)
         self.启动窗口 = wx.Panel(self)
         self.Centre()
         self.read_github = wx.TextCtrl(self.启动窗口,size=(231, 20),pos=(22, 57),value='',name='text',style=wx.TE_READONLY)
