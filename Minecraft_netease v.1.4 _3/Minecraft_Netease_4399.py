@@ -95,7 +95,7 @@ class Frame(wx.Frame):
         self.read_md5.SetLabelText(res1['md5'])
         self.read_debug.SetLabelText(datetime.datetime.now().strftime('[date:%Y-%m-%d time:%H:%M:%S]')+"程序启动")
         #当前版本
-        version="1.4_2"
+        version="1.4_3"
         #更新检测
         uqdate_latest_version_url="https://gitee.com/dai-junhao-123/Minecraft-windows-for-Netease-download/raw/main/Uqdate/Latest_uqdate.txt"
         uqdate_latest_version=requests.get(uqdate_latest_version_url,headers=header).text
