@@ -9,18 +9,8 @@ import webbrowser
 import time
 import os
 from colorama import Fore,Back,Style,init
+import logging
 init(autoreset=True)
-
-try:
-    def windowsmc_path():
-        key = winreg.OpenKey(winreg.HKEY_CURRENT_USER, r'Software\Netease\MCLauncher')
-        path = winreg.QueryValueEx(key, "MinecraftBENeteasePath")[0]
-        return path
-    windowsmc_path1 = windowsmc_path()
-except FileNotFoundError as e:
-    print(Back.RED+"出错了,此程序5秒后退出:",e)
-    time.sleep(5)
-    exit()
 
 # 获取当前系统的桌面绝对路径
 def desktop_path():
@@ -29,9 +19,23 @@ def desktop_path():
     return path
 desktop_path1 = desktop_path()
 
+logging.basicConfig(level=logging.INFO,filename=f'{desktop_path1}/Download_Netease_Bedrock_Debug.log',format=('%(asctime)s - %(levelname)s - %(message)s'))
+try:
+    def windowsmc_path():
+        key = winreg.OpenKey(winreg.HKEY_CURRENT_USER, r'Software\Netease\PC4399_MCLauncher')
+        path = winreg.QueryValueEx(key, "MinecraftBENeteasePath")[0]
+        return path
+    windowsmc_path1 = windowsmc_path()
+except FileNotFoundError as e:
+    print(Back.RED+"出错了,此程序5秒后退出:",e)
+    time.sleep(5)
+    exit()
+
 class Frame(wx.Frame):
     def __init__(self):
         wx.Frame.__init__(self, None, title='网易我的世界基岩版下载地址获取器v1.4_3(By daijunhao),(github:daijunhaoMinecraft),严禁倒卖!,更新内容请去github查看', size=(950, 670),name='frame',style=541072384)
+        icon = wx.Icon(f'{os.path.dirname(os.path.abspath(__file__))}\\Minecraft.Windows.ico')
+        self.SetIcon(icon)
         self.启动窗口 = wx.Panel(self)
         self.Centre()
         self.read_github = wx.TextCtrl(self.启动窗口,size=(231, 20),pos=(22, 57),value='',name='text',style=wx.TE_READONLY)
@@ -95,8 +99,10 @@ class Frame(wx.Frame):
         self.read_md5.SetLabelText(res1['md5'])
         self.read_debug.SetLabelText(datetime.datetime.now().strftime('[date:%Y-%m-%d time:%H:%M:%S]')+"程序启动")
         #当前版本
-        version="1.4_2"
+        version="1.4_4"
         #更新检测
+        logging.info(f"当前版本:{version}")
+        logging.info("检测最新版本中...")
         uqdate_latest_version_url="https://gitee.com/dai-junhao-123/Minecraft-windows-for-Netease-download/raw/main/Uqdate/Latest_uqdate.txt"
         uqdate_latest_version=requests.get(uqdate_latest_version_url,headers=header).text
         uqdate_latest_version_url_text = f"https://gitee.com/dai-junhao-123/Minecraft-windows-for-Netease-download/raw/main/Uqdate/Msg/uqdate_{uqdate_latest_version}.txt"
@@ -104,22 +110,38 @@ class Frame(wx.Frame):
         uqdate_latest_version_url_download=f"https://gitee.com/dai-junhao-123/Minecraft-windows-for-Netease-download/raw/main/Uqdate/Url/uqdate_{uqdate_latest_version}.txt"
         uqdate_latest_version_download=requests.get(uqdate_latest_version_url_download,headers=header).text
         if uqdate_latest_version != version:
-            NO_Latest = wx.MessageDialog(None, caption="Uqdate",message=f"检测到新版本!\n当前版本:{version}\n最新版本:{uqdate_latest_version}\n更新内容如下:\n{uqdate_latest_version_text}\n是否开始更新?",style=wx.YES_NO | wx.ICON_WARNING)
+            logging.info(f"发现更新,最新版本:{uqdate_latest_version}")
+            NO_Latest = wx.MessageDialog(None, caption="Uqdate",message=f"发现新版本!\n当前版本:{version}\n最新版本:{uqdate_latest_version}\n更新内容如下:\n{uqdate_latest_version_text}\n是否开始更新?",style=wx.YES_NO | wx.ICON_WARNING)
             if NO_Latest.ShowModal() == wx.ID_YES:
+                logging.info("用户选择更新")
                 print(datetime.datetime.now().strftime('[date:%Y-%m-%d time:%H:%M:%S]') + "------更新(Debug)------")
+                logging.info("------更新(Debug)------")
                 time.sleep(1)
                 print(datetime.datetime.now().strftime('[date:%Y-%m-%d time:%H:%M:%S]') + "正在执行禁用窗口命令")
+                logging.info("正在执行禁用窗口命令")
                 self.启动窗口.Disable()
                 print(datetime.datetime.now().strftime('[date:%Y-%m-%d time:%H:%M:%S]') + "完成,正在执行下载更新命令(文件默认保存桌面)")
+                logging.info("完成,正在执行下载更新命令(文件默认保存桌面)")
                 time.sleep(1)
                 print(datetime.datetime.now().strftime('[date:%Y-%m-%d time:%H:%M:%S]') + "Start_Wget_Download_Uqdate!")
+                logging.info("Start_Wget_Download_Uqdate")
+                logging.info("Downloading...")
                 os.system(f"{pathx}\\wget.exe -c -O {desktop_path1}\\Minecraft_Netease_{uqdate_latest_version}.exe {uqdate_latest_version_download}")
                 print(datetime.datetime.now().strftime('[date:%Y-%m-%d time:%H:%M:%S]') + "完成,3秒后程序退出")
+                logging.info("完成,3秒后程序退出")
+                OK_Uqdate = wx.MessageDialog(None, caption="Uqdate",message="更新成功,三秒后退出",style=wx.OK | wx.ICON_WARNING)
+                if OK_Uqdate.ShowModal() == wx.ID_OK:
+                    OK_Uqdate.Destroy()
                 time.sleep(3)
                 os.system(f"start {desktop_path1}\\Minecraft_Netease_{uqdate_latest_version}.exe")
+                logging.info("执行命令:start")
                 print(datetime.datetime.now().strftime('[date:%Y-%m-%d time:%H:%M:%S]') + "Done!")
+                logging.info("Exit")
                 exit()
+            if NO_Latest.ShowModal() == wx.ID_NO:
+                logging.WARNING("用户取消更新")
         else:
+            logging.info("当前是最新版本!")
             YES_Latest = wx.MessageDialog(None, caption="Uqdate",message="当前是最新版本!",style=wx.OK | wx.ICON_INFORMATION)
             if YES_Latest.ShowModal() == wx.ID_OK:
                 YES_Latest.Destroy()
@@ -165,12 +187,15 @@ class Frame(wx.Frame):
 
 
     def Wget_Download_按钮被单击(self,event):
+        logging.info("用户选择:使用wget下载")
         Confirm_the_information=wx.MessageDialog(None, u"是否继续执行Wget下载?", u"确认信息", wx.YES_NO | wx.ICON_INFORMATION)
         if Confirm_the_information.ShowModal()==wx.ID_YES:
             print(datetime.datetime.now().strftime('[date:%Y-%m-%d time:%H:%M:%S]') + "------使用Wget下载(Debug)------")
+            logging.info("------使用Wget下载(Debug)------")
             time.sleep(1)
             self.read_debug.SetLabelText(datetime.datetime.now().strftime('[date:%Y-%m-%d time:%H:%M:%S]') + "正在执行禁用按钮命令")
             print(datetime.datetime.now().strftime('[date:%Y-%m-%d time:%H:%M:%S]') + "正在执行禁用按钮命令")
+            logging.info("正在执行禁用按钮命令")
             time.sleep(1)
             self.OpenWeb.Disable()
             self.Wget_Download.Disable()
@@ -178,24 +203,34 @@ class Frame(wx.Frame):
             self.Minecrat_for_Netease.Disable()
             self.read_debug.SetLabelText(datetime.datetime.now().strftime('[date:%Y-%m-%d time:%H:%M:%S]') + "完成,正在执行下载命令")
             print(datetime.datetime.now().strftime('[date:%Y-%m-%d time:%H:%M:%S]') + "完成,正在执行下载命令")
+            logging.info("完成,正在执行下载命令")
             time.sleep(1)
             print(datetime.datetime.now().strftime('[date:%Y-%m-%d time:%H:%M:%S]') + "Start_Wget_Download!")
+            logging.info("Start_Wget_Download!")
             os.system(f"{pathx}\\wget.exe -c -P {desktop_path1} {res1['url']}")
             self.read_debug.SetLabelText(datetime.datetime.now().strftime('[date:%Y-%m-%d time:%H:%M:%S') + " All done]"+"完成下载!")
             print(datetime.datetime.now().strftime('[date:%Y-%m-%d time:%H:%M:%S') + " All done]" + "完成下载!\n")
+            logging.info("完成下载,正在执行解禁按钮命令")
             self.OpenWeb.Enable()
             self.Wget_Download.Enable()
             self.zip_Wget_download.Enable()
             self.Minecrat_for_Netease.Enable()
+            logging.info("Done!")
+            download_stats = wx.MessageDialog(None, u"执行完成!", u"stats",wx.OK | wx.ICON_INFORMATION)
+            if download_stats.ShowModal() == wx.ID_OK:
+                download_stats.Destroy()
 
 
     def zip_Wget_download_按钮被单击(self,event):
+        logging.info("用户选择:使用wget下载并解压")
         Confirm_the_information = wx.MessageDialog(None, u"是否继续执行Wget下载并解压缩?", u"确认信息",wx.YES_NO | wx.ICON_INFORMATION)
         if Confirm_the_information.ShowModal() == wx.ID_YES:
             print(datetime.datetime.now().strftime('[date:%Y-%m-%d time:%H:%M:%S]') + "------使用Wget下载并解压(Debug)------")
+            logging.info("------使用Wget下载并解压(Debug)------")
             time.sleep(1)
             self.read_debug.SetLabelText(datetime.datetime.now().strftime('[date:%Y-%m-%d time:%H:%M:%S]') + "正在执行禁用按钮命令")
             print(datetime.datetime.now().strftime('[date:%Y-%m-%d time:%H:%M:%S]') + "正在执行禁用按钮命令")
+            logging.info("正在执行禁用按钮命令")
             time.sleep(1)
             self.OpenWeb.Disable()
             self.Wget_Download.Disable()
@@ -203,40 +238,61 @@ class Frame(wx.Frame):
             self.Minecrat_for_Netease.Disable()
             self.read_debug.SetLabelText(datetime.datetime.now().strftime('[date:%Y-%m-%d time:%H:%M:%S]') + "完成,正在执行删除旧版本目录操作")
             print(datetime.datetime.now().strftime('[date:%Y-%m-%d time:%H:%M:%S]') + "完成,正在执行删除旧版本目录操作")
+            logging.info("完成,正在执行删除旧版本目录操作")
             time.sleep(1)
             print(datetime.datetime.now().strftime('[date:%Y-%m-%d time:%H:%M:%S]') + "Start_del/rmdir!")
+            logging.info("Start_del/rmdir")
+            logging.info("当前执行命令:del和rmdir")
             os.system(f"rmdir /s /q {desktop_path1}\\windowsmc")
             os.system(f"del /f /s /q {desktop_path1}\\Minecraft.7z")
             self.read_debug.SetLabelText(datetime.datetime.now().strftime('[date:%Y-%m-%d time:%H:%M:%S]') + "完成,正在执行下载命令")
             print(datetime.datetime.now().strftime('[date:%Y-%m-%d time:%H:%M:%S]') + "完成,正在执行下载命令")
+            logging.info("完成,正在执行下载命令")
             time.sleep(1)
             print(datetime.datetime.now().strftime('[date:%Y-%m-%d time:%H:%M:%S]') + "Start_Wget_Download!")
+            logging.info("Start_Wget_Download!")
+            logging.info("Downloading...")
             os.system(f"{pathx}\\wget.exe -c -O {desktop_path1}\\Minecraft.7z {res1['url']}")
             self.read_debug.SetLabelText(datetime.datetime.now().strftime('[date:%Y-%m-%d time:%H:%M:%S]') + "完成下载,正在执行解压命令")
             print(datetime.datetime.now().strftime('[date:%Y-%m-%d time:%H:%M:%S]') + "完成下载,正在执行解压命令")
+            logging.info("完成下载,正在执行解压命令")
             time.sleep(1)
             self.read_debug.SetLabelText(datetime.datetime.now().strftime('[date:%Y-%m-%d time:%H:%M:%S]') + "Start_7z_unpack!")
+            logging.info("Start_7z_unpack!")
+            logging.info("当前正在执行7z命令行解压命令")
             os.system(f"{pathx}\\7z.exe x {desktop_path1}\\Minecraft.7z -o{desktop_path1}\\")
             self.read_debug.SetLabelText(datetime.datetime.now().strftime('[date:%Y-%m-%d time:%H:%M:%S]') + "完成,正在删除临时文件")
             print(datetime.datetime.now().strftime('[date:%Y-%m-%d time:%H:%M:%S]') + "完成,正在删除临时文件")
+            logging.info("完成,正在删除临时文件")
             time.sleep(1)
             print(datetime.datetime.now().strftime('[date:%Y-%m-%d time:%H:%M:%S]') + "start_del!")
+            logging.info("start_del!")
+            logging.info("当前执行命令:del")
             os.system(f"del /f /s /q {desktop_path1}\\Minecraft.7z")
             self.read_debug.SetLabelText(datetime.datetime.now().strftime('[date:%Y-%m-%d time:%H:%M:%S') + " All done]"+"完成!")
             print(datetime.datetime.now().strftime('[date:%Y-%m-%d time:%H:%M:%S') + " All done]" + "完成!\n")
+            logging.info("完成,正在执行解禁按钮命令")
             self.OpenWeb.Enable()
             self.Wget_Download.Enable()
             self.zip_Wget_download.Enable()
             self.Minecrat_for_Netease.Enable()
+            logging.info("Done!")
+            download_zip_stats = wx.MessageDialog(None, u"执行完成!", u"stats", wx.OK | wx.ICON_INFORMATION)
+            if download_zip_stats.ShowModal() == wx.ID_OK:
+                download_zip_stats.Destroy()
 
 
     def Minecrat_for_Netease_按钮被单击(self,event):
+        logging.info("用户选择:重新安装基岩版文件/安装基岩版文件")
         warning = wx.MessageDialog(None, u"是否继续执行?(这可能会导致你的基岩版被删除重新下载)", u"警告",wx.YES_NO | wx.ICON_WARNING)
         if warning.ShowModal() == wx.ID_YES:
+            logging.warning("用户继续执行")
             print(datetime.datetime.now().strftime('[date:%Y-%m-%d time:%H:%M:%S]') + "------重新安装基岩版文件(Debug)------")
+            logging.info("------重新安装基岩版文件(Debug)------")
             time.sleep(1)
             self.read_debug.SetLabelText(datetime.datetime.now().strftime('[date:%Y-%m-%d time:%H:%M:%S]') + "正在执行禁用按钮命令")
             print(datetime.datetime.now().strftime('[date:%Y-%m-%d time:%H:%M:%S]') + "正在执行禁用按钮命令")
+            logging.info("正在执行禁用按钮命令")
             time.sleep(1)
             self.OpenWeb.Disable()
             self.Wget_Download.Disable()
@@ -244,47 +300,73 @@ class Frame(wx.Frame):
             self.Minecrat_for_Netease.Disable()
             self.read_debug.SetLabelText(datetime.datetime.now().strftime('[date:%Y-%m-%d time:%H:%M:%S]') + "完成,正在执行删除旧版本目录操作/电脑上的网易我的世界基岩版")
             print(datetime.datetime.now().strftime('[date:%Y-%m-%d time:%H:%M:%S]') + "完成,正在执行删除旧版本目录操作/电脑上的网易我的世界基岩版")
+            logging.info("完成,正在执行删除旧版本目录操作/电脑上的网易我的世界基岩版")
             time.sleep(1)
             print(datetime.datetime.now().strftime('[date:%Y-%m-%d time:%H:%M:%S]') + "Start_del/rmdir!")
+            logging.info("Start_del/rmdir!")
+            logging.info("当前执行命令:del/rmdir")
             os.system(f"rmdir /s /q {windowsmc_path1}\\windowsmc")
             os.system(f"rmdir /s /q {desktop_path1}\\windowsmc")
             os.system(f"del /f /s /q {desktop_path1}\\Minecraft.7z")
             self.read_debug.SetLabelText(datetime.datetime.now().strftime('[date:%Y-%m-%d time:%H:%M:%S]') + "完成,正在执行下载命令")
             print(datetime.datetime.now().strftime('[date:%Y-%m-%d time:%H:%M:%S]') + "完成,正在执行下载命令")
+            logging.info("完成,正在执行下载命令")
             time.sleep(1)
             print(datetime.datetime.now().strftime('[date:%Y-%m-%d time:%H:%M:%S]') + "Start_Wget_Download!")
+            logging.info("Start_Wget_Download!")
+            logging.info("Downloading...")
             os.system(f"{pathx}\\wget.exe -c -O {desktop_path1}\\Minecraft.7z {res1['url']}")
             self.read_debug.SetLabelText(datetime.datetime.now().strftime('[date:%Y-%m-%d time:%H:%M:%S]') + "完成下载,正在执行解压命令")
             print(datetime.datetime.now().strftime('[date:%Y-%m-%d time:%H:%M:%S]') + "完成下载,正在执行解压命令")
+            logging.info("完成下载,正在执行解压命令")
             time.sleep(1)
-            self.read_debug.SetLabelText(datetime.datetime.now().strftime('[date:%Y-%m-%d time:%H:%M:%S]') + "Start_7z_unpack!")
+            print(datetime.datetime.now().strftime('[date:%Y-%m-%d time:%H:%M:%S]') + "Start_7z_unpack!")
+            logging.info("Start_7z_unpack!")
+            logging.info("当前正在执行7z命令行解压命令")
             os.system(f"{pathx}\\7z.exe x {desktop_path1}\\Minecraft.7z -o{desktop_path1}\\")
             self.read_debug.SetLabelText(datetime.datetime.now().strftime('[date:%Y-%m-%d time:%H:%M:%S]') + "完成,正在移动windowsmc文件")
             print(datetime.datetime.now().strftime('[date:%Y-%m-%d time:%H:%M:%S]') + "完成,正在移动windowsmc文件")
+            logging.info("完成,正在移动windowsmc文件")
             time.sleep(1)
             print(datetime.datetime.now().strftime('[date:%Y-%m-%d time:%H:%M:%S]') + "Start_move!")
+            logging.info("Start_move!")
+            logging.info("正在执行命令:move")
             os.system(f"move {desktop_path1}\\windowsmc {windowsmc_path1}\\")
             self.read_debug.SetLabelText(datetime.datetime.now().strftime('[date:%Y-%m-%d time:%H:%M:%S]') + "完成,正在下载.checkInfo文件")
             print(datetime.datetime.now().strftime('[date:%Y-%m-%d time:%H:%M:%S]') + "完成,正在下载.checkInfo文件")
+            logging.info("完成,正在下载.checkInfo文件")
             time.sleep(1)
             print(datetime.datetime.now().strftime('[date:%Y-%m-%d time:%H:%M:%S]') + "Start_Wget_Download!")
+            logging.info("Start_Wget_Download")
+            logging.info("Downloading...")
             os.system(f"{pathx}\\wget.exe -c -O {desktop_path1}\\.checkInfo https://gitee.com/dai-junhao-123/Minecraft-windows-for-Netease-download/raw/main/.checkInfo")
             self.read_debug.SetLabelText(datetime.datetime.now().strftime('[date:%Y-%m-%d time:%H:%M:%S]') + "完成,正在移动.checkInfo文件")
             print(datetime.datetime.now().strftime('[date:%Y-%m-%d time:%H:%M:%S]') + "完成,正在移动.checkInfo文件")
+            logging.info("完成,正在移动.checkInfo文件")
             time.sleep(1)
             print(datetime.datetime.now().strftime('[date:%Y-%m-%d time:%H:%M:%S]') + "Start_move!")
+            logging.info("Start_move!")
+            logging.info("正在执行命令:move")
             os.system(f"move {desktop_path1}\\.checkInfo {windowsmc_path1}\\windowsmc")
             self.read_debug.SetLabelText(datetime.datetime.now().strftime('[date:%Y-%m-%d time:%H:%M:%S]') + "完成,正在删除临时文件")
             print(datetime.datetime.now().strftime('[date:%Y-%m-%d time:%H:%M:%S]') + "完成,正在删除临时文件")
+            logging.info("完成,正在删除临时文件")
             time.sleep(1)
             print(datetime.datetime.now().strftime('[date:%Y-%m-%d time:%H:%M:%S]') + "start_del!")
+            logging.info("start_del!")
+            logging.info("正在执行命令:del")
             os.system(f"del /f /s /q {desktop_path1}\\Minecraft.7z")
             self.read_debug.SetLabelText(datetime.datetime.now().strftime('[date:%Y-%m-%d time:%H:%M:%S') + " All done]"+"完成!")
             print(datetime.datetime.now().strftime('[date:%Y-%m-%d time:%H:%M:%S') + " All done]" + "完成!\n")
+            logging.info("完成,正在执行解禁按钮命令")
             self.OpenWeb.Enable()
             self.Wget_Download.Enable()
             self.zip_Wget_download.Enable()
             self.Minecrat_for_Netease.Enable()
+            logging.info("Done!")
+            Reload_stats = wx.MessageDialog(None, u"执行完成!", u"stats", wx.OK | wx.ICON_INFORMATION)
+            if Reload_stats.ShowModal() == wx.ID_OK:
+                Reload_stats.Destroy()
 
 class myApp(wx.App):
     def  OnInit(self):
