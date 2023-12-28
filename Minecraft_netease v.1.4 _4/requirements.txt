@@ -1,4 +1,0 @@
-wxpython
-requests
-datetime
-pyperclip3
