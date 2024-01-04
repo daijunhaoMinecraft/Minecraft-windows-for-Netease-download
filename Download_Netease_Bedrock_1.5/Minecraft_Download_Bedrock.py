@@ -32,7 +32,7 @@ class Frame(wx.Frame):
         self.Netease.Bind(wx.EVT_BUTTON,self.Netease_按钮被单击)
 
         # 当前版本
-        version = "1.4_5"
+        version = "1.5_fix"
         # 更新检测
         header = {"content-type": "application/json"}
         logging.info(f"当前版本:{version}")
@@ -90,7 +90,7 @@ class Frame(wx.Frame):
             self.Netease.SetLabelText("网易版(当前不可用)")
         try:
             def windowsmc_path():
-                key = winreg.OpenKey(winreg.HKEY_CURRENT_USER, r'Software\Netease\MCLauncher')
+                key = winreg.OpenKey(winreg.HKEY_CURRENT_USER, r'Software\Netease\PC4399_MCLauncher')
                 path = winreg.QueryValueEx(key, "MinecraftBENeteasePath")[0]
                 return path
             windowsmc_path1 = windowsmc_path()
