@@ -1,4 +1,6 @@
 # -*- coding:utf-8 -*-
+import json
+
 import wx
 import winreg
 import os
@@ -32,20 +34,19 @@ class Frame(wx.Frame):
         self.Netease.Bind(wx.EVT_BUTTON,self.Netease_按钮被单击)
 
         # 当前版本
-        version = "1.5_fix"
+        version = "1.5_1"
         # 更新检测
         header = {"content-type": "application/json"}
         logging.info(f"当前版本:{version}")
         logging.info("检测最新版本中...")
-        uqdate_latest_version_url = "https://gitee.com/dai-junhao-123/Minecraft-windows-for-Netease-download/raw/main/Uqdate/Latest_uqdate.txt"
-        uqdate_latest_version = requests.get(uqdate_latest_version_url, headers=header).text
-        uqdate_latest_version_url_text = f"https://gitee.com/dai-junhao-123/Minecraft-windows-for-Netease-download/raw/main/Uqdate/Msg/uqdate_{uqdate_latest_version}.txt"
-        uqdate_latest_version_text = requests.get(uqdate_latest_version_url_text, headers=header).text
-        uqdate_latest_version_url_download = f"https://gitee.com/dai-junhao-123/Minecraft-windows-for-Netease-download/raw/main/Uqdate/Url/uqdate_{uqdate_latest_version}.txt"
-        uqdate_latest_version_download = requests.get(uqdate_latest_version_url_download, headers=header).text
-        if uqdate_latest_version != version:
-            logging.info(f"发现更新,最新版本:{uqdate_latest_version}")
-            NO_Latest = wx.MessageDialog(None, caption="Uqdate",message=f"发现新版本!\n当前版本:{version}\n最新版本:{uqdate_latest_version}\n更新内容如下:\n{uqdate_latest_version_text}\n是否开始更新?",style=wx.YES_NO | wx.ICON_WARNING)
+        uqdate_latest = requests.get("https://gitee.com/dai-junhao-123/Minecraft-windows-for-Netease-download/raw/main/uqdate.json", headers=header).text
+        uqdate_version = json.loads(uqdate_latest)['uqdate_version']
+        uqdate_msg = json.loads(uqdate_latest)['uqdate_msg']
+        uqdate_url = json.loads(uqdate_latest)['uqdate_url']
+        uqdate_name = json.loads(uqdate_latest)['uqdate_name']
+        if uqdate_version != version:
+            logging.info(f"发现更新,最新版本:{uqdate_version}")
+            NO_Latest = wx.MessageDialog(None, caption="Uqdate",message=f"发现新版本!\n当前版本:{version}\n最新版本:{uqdate_version}\n更新内容如下:\n{uqdate_msg}\n是否开始更新?",style=wx.YES_NO | wx.ICON_WARNING)
             if NO_Latest.ShowModal() == wx.ID_YES:
                 logging.info("用户选择更新")
                 print(datetime.datetime.now().strftime('[date:%Y-%m-%d time:%H:%M:%S]') + "------更新(Debug)------")
@@ -54,19 +55,17 @@ class Frame(wx.Frame):
                 print(datetime.datetime.now().strftime('[date:%Y-%m-%d time:%H:%M:%S]') + "正在执行禁用窗口命令")
                 logging.info("正在执行禁用窗口命令")
                 self.启动窗口.Disable()
-                print(datetime.datetime.now().strftime(
-                    '[date:%Y-%m-%d time:%H:%M:%S]') + "完成,正在执行下载更新命令(文件默认保存桌面)")
+                print(datetime.datetime.now().strftime('[date:%Y-%m-%d time:%H:%M:%S]') + "完成,正在执行下载更新命令(文件默认保存桌面)")
                 logging.info("完成,正在执行下载更新命令(文件默认保存桌面)")
                 time.sleep(1)
                 print(datetime.datetime.now().strftime('[date:%Y-%m-%d time:%H:%M:%S]') + "Start_Wget_Download_Uqdate!")
                 logging.info("Start_Wget_Download_Uqdate")
                 logging.info("Downloading...")
-                os.system(
-                    f"{pathx}\\aria2c.exe -d --out=Minecraft_Netease_{uqdate_latest_version}.exe -d {desktop_path1} {uqdate_latest_version_download}")
+                os.system(f"{pathx}\\aria2c.exe -d --out={uqdate_name} -d {desktop_path1} {uqdate_url}")
                 print(datetime.datetime.now().strftime('[date:%Y-%m-%d time:%H:%M:%S]') + "完成,3秒后程序退出")
                 logging.info("完成,3秒后程序退出")
                 time.sleep(3)
-                os.system(f"start {desktop_path1}\\Minecraft_Download_Bedrock_{uqdate_latest_version}.exe")
+                os.system(f"start {desktop_path1}\\{uqdate_name}")
                 logging.info("执行命令:start")
                 print(datetime.datetime.now().strftime('[date:%Y-%m-%d time:%H:%M:%S]') + "Done!")
                 logging.info("Exit")
