@@ -23,7 +23,7 @@ desktop_path1 = desktop_path()
 logging.basicConfig(level=logging.INFO,filename=f'{desktop_path1}/Download_Netease_Bedrock_Debug.log',format=('%(asctime)s - %(levelname)s - %(message)s'))
 try:
     def windowsmc_path():
-        key = winreg.OpenKey(winreg.HKEY_CURRENT_USER, r'Software\Netease\PC4399_MCLauncher')
+        key = winreg.OpenKey(winreg.HKEY_CURRENT_USER, r'Software\Netease\MCLauncher')
         path = winreg.QueryValueEx(key, "MinecraftBENeteasePath")[0]
         return path
     windowsmc_path1 = windowsmc_path()
@@ -34,7 +34,7 @@ except FileNotFoundError as e:
 
 class Frame(wx.Frame):
     def __init__(self):
-        wx.Frame.__init__(self, None, title='网易我的世界基岩版下载地址获取器v1.5_1(By daijunhao),(github:daijunhaoMinecraft),仅供学习交流,严禁用于商业用途,请于24小时内删除', size=(950, 670),name='frame',style=541072384)
+        wx.Frame.__init__(self, None, title='网易我的世界基岩版下载地址获取器v1.5_2(By daijunhao),(github:daijunhaoMinecraft),仅供学习交流,严禁用于商业用途,请于24小时内删除', size=(950, 670),name='frame',style=541072384)
         icon = wx.Icon(f'{os.path.dirname(os.path.abspath(__file__))}\\Minecraft.Windows.ico')
         self.SetIcon(icon)
         self.启动窗口 = wx.Panel(self)
@@ -263,6 +263,12 @@ class Frame(wx.Frame):
             shutil.rmtree(f"{windowsmc_path1}\\windowsmc", ignore_errors=True)
             shutil.rmtree(f"{desktop_path1}\\windowsmc", ignore_errors=True)
             os.system(f"del /f /s /q {desktop_path1}\\Minecraft.7z")
+            shutil.rmtree(f"{windowsmc_path1}\\windowsmc", ignore_errors=True)
+            shutil.rmtree(f"{desktop_path1}\\windowsmc", ignore_errors=True)
+            os.system(f"del /f /s /q {desktop_path1}\\Minecraft.7z")
+            shutil.rmtree(f"{windowsmc_path1}\\windowsmc", ignore_errors=True)
+            shutil.rmtree(f"{desktop_path1}\\windowsmc", ignore_errors=True)
+            os.system(f"del /f /s /q {desktop_path1}\\Minecraft.7z")
             self.read_debug.SetLabelText(datetime.datetime.now().strftime('[date:%Y-%m-%d time:%H:%M:%S]') + "完成,正在执行下载命令")
             print(datetime.datetime.now().strftime('[date:%Y-%m-%d time:%H:%M:%S]') + "完成,正在执行下载命令")
             logging.info("完成,正在执行下载命令")
@@ -310,6 +316,7 @@ class Frame(wx.Frame):
             print(datetime.datetime.now().strftime('[date:%Y-%m-%d time:%H:%M:%S]') + "start_del!")
             logging.info("start_del!")
             logging.info("正在执行命令:del")
+            os.system(f"del /f /s /q {desktop_path1}\\Minecraft.7z")
             os.system(f"del /f /s /q {desktop_path1}\\Minecraft.7z")
             self.read_debug.SetLabelText(datetime.datetime.now().strftime('[date:%Y-%m-%d time:%H:%M:%S') + " All done]"+"完成!")
             print(datetime.datetime.now().strftime('[date:%Y-%m-%d time:%H:%M:%S') + " All done]" + "完成!\n")
