@@ -11,6 +11,9 @@ import os
 from colorama import Fore,Back,Style,init
 import logging
 import shutil
+from urllib.parse import urlparse
+from tqdm.tk import tqdm
+requests.packages.urllib3.disable_warnings()
 init(autoreset=True)
 
 # 获取当前系统的桌面绝对路径
@@ -23,7 +26,7 @@ desktop_path1 = desktop_path()
 logging.basicConfig(level=logging.INFO,filename=f'{desktop_path1}/Download_Netease_Bedrock_Debug.log',format=('%(asctime)s - %(levelname)s - %(message)s'))
 try:
     def windowsmc_path():
-        key = winreg.OpenKey(winreg.HKEY_CURRENT_USER, r'Software\Netease\PC4399_MCLauncher')
+        key = winreg.OpenKey(winreg.HKEY_CURRENT_USER, r'Software\Netease\MCLauncher')
         path = winreg.QueryValueEx(key, "MinecraftBENeteasePath")[0]
         return path
     windowsmc_path1 = windowsmc_path()
@@ -32,9 +35,25 @@ except FileNotFoundError as e:
     time.sleep(5)
     exit()
 
+def download_nofilename(url, save):
+    headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36 Edg/120.0.0.0'}
+    download_file = requests.get(url,headers=headers,verify=False,stream=True)
+    download_file_size = int(download_file.headers['Content-Length'])/1024
+    file_name = os.path.basename(urlparse(url).path)
+    with open(file=f"{save}\\{file_name}", mode="wb") as f:
+        for data in tqdm(iterable=download_file.iter_content(1024),total=download_file_size,unit='k',desc=f"正在下载文件...[{file_name}]"):
+            f.write(data)
+def download(url, save, name):
+    headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36 Edg/120.0.0.0'}
+    download_file = requests.get(url,headers=headers,verify=False,stream=True)
+    download_file_size = int(download_file.headers['Content-Length'])/1024
+    with open(file=f"{save}\\{name}", mode="wb") as f:
+        for data in tqdm(iterable=download_file.iter_content(1024),total=download_file_size,unit='k',desc=f"正在下载文件...[{name}]"):
+            f.write(data)
+
 class Frame(wx.Frame):
     def __init__(self):
-        wx.Frame.__init__(self, None, title='网易我的世界基岩版下载地址获取器v1.5_2(By daijunhao),(github:daijunhaoMinecraft),仅供学习交流,严禁用于商业用途,请于24小时内删除', size=(950, 670),name='frame',style=541072384)
+        wx.Frame.__init__(self, None, title='网易我的世界基岩版下载地址获取器v1.5_3(By daijunhao),(github:daijunhaoMinecraft),仅供学习交流,严禁用于商业用途,请于24小时内删除', size=(950, 670),name='frame',style=541072384)
         icon = wx.Icon(f'{os.path.dirname(os.path.abspath(__file__))}\\Minecraft.Windows.ico')
         self.SetIcon(icon)
         self.启动窗口 = wx.Panel(self)
@@ -71,10 +90,10 @@ class Frame(wx.Frame):
         self.标签10 = wx.StaticText(self.启动窗口,size=(200, 25),pos=(426, 18),label='日志(更多详细请看cmd后台窗口)',name='staticText',style=2321)
         self.OpenWeb = wx.Button(self.启动窗口,size=(273, 82),pos=(544, 150),label='使用浏览器下载',name='button')
         self.OpenWeb.Bind(wx.EVT_BUTTON,self.OpenWeb_按钮被单击)
-        self.Aria2c_Download = wx.Button(self.启动窗口,size=(273, 82),pos=(545, 243),label='使用Aria2c下载(默认保存位置为桌面)',name='button')
-        self.Aria2c_Download.Bind(wx.EVT_BUTTON,self.Aria2c_Download_按钮被单击)
-        self.zip_Aria2c_download = wx.Button(self.启动窗口,size=(273, 82),pos=(544, 336),label='使用Aria2c下载并解压(默认保存位置为桌面)',name='button')
-        self.zip_Aria2c_download.Bind(wx.EVT_BUTTON,self.zip_Aria2c_download_按钮被单击)
+        self.GET_Download = wx.Button(self.启动窗口,size=(273, 82),pos=(545, 243),label='使用GET下载(默认保存位置为桌面)',name='button')
+        self.GET_Download.Bind(wx.EVT_BUTTON,self.GET_Download_按钮被单击)
+        self.zip_GET_download = wx.Button(self.启动窗口,size=(273, 82),pos=(544, 336),label='使用GET下载并解压(默认保存位置为桌面)',name='button')
+        self.zip_GET_download.Bind(wx.EVT_BUTTON,self.zip_GET_download_按钮被单击)
         self.Minecrat_for_Netease = wx.Button(self.启动窗口,size=(273, 82),pos=(544, 430),label='重新安装基岩版文件/安装基岩版文件',name='button')
         self.Minecrat_for_Netease.SetForegroundColour((255, 0, 0, 255))
         self.Minecrat_for_Netease.Bind(wx.EVT_BUTTON,self.Minecrat_for_Netease_按钮被单击)
@@ -141,34 +160,34 @@ class Frame(wx.Frame):
         self.read_debug.SetLabelText(datetime.datetime.now().strftime('[date:%Y-%m-%d time:%H:%M:%S]') + "浏览器打开成功")
 
 
-    def Aria2c_Download_按钮被单击(self,event):
-        logging.info("用户选择:使用Aria2c下载")
-        Confirm_the_information=wx.MessageDialog(None, u"是否继续执行Aria2c下载?", u"确认信息", wx.YES_NO | wx.ICON_INFORMATION)
+    def GET_Download_按钮被单击(self,event):
+        logging.info("用户选择:使用GET下载")
+        Confirm_the_information=wx.MessageDialog(None, u"是否继续执行GET下载?", u"确认信息", wx.YES_NO | wx.ICON_INFORMATION)
         if Confirm_the_information.ShowModal()==wx.ID_YES:
-            print(datetime.datetime.now().strftime('[date:%Y-%m-%d time:%H:%M:%S]') + "------使用Aria2c下载(Debug)------")
-            logging.info("------使用Aria2c下载(Debug)------")
+            print(datetime.datetime.now().strftime('[date:%Y-%m-%d time:%H:%M:%S]') + "------使用GET下载(Debug)------")
+            logging.info("------使用GET方式下载(Debug)------")
             time.sleep(1)
             self.read_debug.SetLabelText(datetime.datetime.now().strftime('[date:%Y-%m-%d time:%H:%M:%S]') + "正在执行禁用按钮命令")
             print(datetime.datetime.now().strftime('[date:%Y-%m-%d time:%H:%M:%S]') + "正在执行禁用按钮命令")
             logging.info("正在执行禁用按钮命令")
             time.sleep(1)
             self.OpenWeb.Disable()
-            self.Aria2c_Download.Disable()
-            self.zip_Aria2c_download.Disable()
+            self.GET_Download.Disable()
+            self.zip_GET_download.Disable()
             self.Minecrat_for_Netease.Disable()
             self.read_debug.SetLabelText(datetime.datetime.now().strftime('[date:%Y-%m-%d time:%H:%M:%S]') + "完成,正在执行下载命令")
             print(datetime.datetime.now().strftime('[date:%Y-%m-%d time:%H:%M:%S]') + "完成,正在执行下载命令")
             logging.info("完成,正在执行下载命令")
             time.sleep(1)
-            print(datetime.datetime.now().strftime('[date:%Y-%m-%d time:%H:%M:%S]') + "Start_Aria2c_Download!")
-            logging.info("Start_Aria2c_Download!")
-            os.system(f"{pathx}\\aria2c.exe -d {desktop_path1} {res1['url']}")
+            print(datetime.datetime.now().strftime('[date:%Y-%m-%d time:%H:%M:%S]') + "Start_GET_Download!")
+            logging.info("Start_GET_Download!")
+            download_nofilename(f"{res1['url']}", f"{desktop_path1}")
             self.read_debug.SetLabelText(datetime.datetime.now().strftime('[date:%Y-%m-%d time:%H:%M:%S') + " All done]"+"完成下载!")
             print(datetime.datetime.now().strftime('[date:%Y-%m-%d time:%H:%M:%S') + " All done]" + "完成下载!\n")
             logging.info("完成下载,正在执行解禁按钮命令")
             self.OpenWeb.Enable()
-            self.Aria2c_Download.Enable()
-            self.zip_Aria2c_download.Enable()
+            self.GET_Download.Enable()
+            self.zip_GET_download.Enable()
             self.Minecrat_for_Netease.Enable()
             logging.info("Done!")
             download_stats = wx.MessageDialog(None, u"执行完成!", u"stats",wx.OK | wx.ICON_INFORMATION)
@@ -176,20 +195,20 @@ class Frame(wx.Frame):
                 download_stats.Destroy()
 
 
-    def zip_Aria2c_download_按钮被单击(self,event):
-        logging.info("用户选择:使用Aria2c下载并解压")
-        Confirm_the_information = wx.MessageDialog(None, u"是否继续执行Aria2c下载并解压缩?", u"确认信息",wx.YES_NO | wx.ICON_INFORMATION)
+    def zip_GET_download_按钮被单击(self,event):
+        logging.info("用户选择:使用GET下载并解压")
+        Confirm_the_information = wx.MessageDialog(None, u"是否继续执行GET下载并解压缩?", u"确认信息",wx.YES_NO | wx.ICON_INFORMATION)
         if Confirm_the_information.ShowModal() == wx.ID_YES:
-            print(datetime.datetime.now().strftime('[date:%Y-%m-%d time:%H:%M:%S]') + "------使用Aria2c下载并解压(Debug)------")
-            logging.info("------使用Aria2c下载并解压(Debug)------")
+            print(datetime.datetime.now().strftime('[date:%Y-%m-%d time:%H:%M:%S]') + "------使用GET下载并解压(Debug)------")
+            logging.info("------使用GET下载并解压(Debug)------")
             time.sleep(1)
             self.read_debug.SetLabelText(datetime.datetime.now().strftime('[date:%Y-%m-%d time:%H:%M:%S]') + "正在执行禁用按钮命令")
             print(datetime.datetime.now().strftime('[date:%Y-%m-%d time:%H:%M:%S]') + "正在执行禁用按钮命令")
             logging.info("正在执行禁用按钮命令")
             time.sleep(1)
             self.OpenWeb.Disable()
-            self.Aria2c_Download.Disable()
-            self.zip_Aria2c_download.Disable()
+            self.GET_Download.Disable()
+            self.zip_GET_download.Disable()
             self.Minecrat_for_Netease.Disable()
             self.read_debug.SetLabelText(datetime.datetime.now().strftime('[date:%Y-%m-%d time:%H:%M:%S]') + "完成,正在执行删除旧版本目录操作")
             print(datetime.datetime.now().strftime('[date:%Y-%m-%d time:%H:%M:%S]') + "完成,正在执行删除旧版本目录操作")
@@ -204,10 +223,10 @@ class Frame(wx.Frame):
             print(datetime.datetime.now().strftime('[date:%Y-%m-%d time:%H:%M:%S]') + "完成,正在执行下载命令")
             logging.info("完成,正在执行下载命令")
             time.sleep(1)
-            print(datetime.datetime.now().strftime('[date:%Y-%m-%d time:%H:%M:%S]') + "Start_Aria2c_Download!")
-            logging.info("Start_Aria2c_Download!")
+            print(datetime.datetime.now().strftime('[date:%Y-%m-%d time:%H:%M:%S]') + "Start_GET_Download!")
+            logging.info("Start_GET_Download!")
             logging.info("Downloading...")
-            os.system(f"{pathx}\\aria2c.exe --out=Minecraft.7z -d {desktop_path1} {res1['url']}")
+            download(f"{res1['url']}",f"{desktop_path1}","Minecraft.7z")
             self.read_debug.SetLabelText(datetime.datetime.now().strftime('[date:%Y-%m-%d time:%H:%M:%S]') + "完成下载,正在执行解压命令")
             print(datetime.datetime.now().strftime('[date:%Y-%m-%d time:%H:%M:%S]') + "完成下载,正在执行解压命令")
             logging.info("完成下载,正在执行解压命令")
@@ -228,8 +247,8 @@ class Frame(wx.Frame):
             print(datetime.datetime.now().strftime('[date:%Y-%m-%d time:%H:%M:%S') + " All done]" + "完成!\n")
             logging.info("完成,正在执行解禁按钮命令")
             self.OpenWeb.Enable()
-            self.Aria2c_Download.Enable()
-            self.zip_Aria2c_download.Enable()
+            self.GET_Download.Enable()
+            self.zip_GET_download.Enable()
             self.Minecrat_for_Netease.Enable()
             logging.info("Done!")
             download_zip_stats = wx.MessageDialog(None, u"执行完成!", u"stats", wx.OK | wx.ICON_INFORMATION)
@@ -250,8 +269,8 @@ class Frame(wx.Frame):
             logging.info("正在执行禁用按钮命令")
             time.sleep(1)
             self.OpenWeb.Disable()
-            self.Aria2c_Download.Disable()
-            self.zip_Aria2c_download.Disable()
+            self.GET_Download.Disable()
+            self.zip_GET_download.Disable()
             self.Minecrat_for_Netease.Disable()
             self.read_debug.SetLabelText(datetime.datetime.now().strftime('[date:%Y-%m-%d time:%H:%M:%S]') + "完成,正在执行删除旧版本目录操作/电脑上的网易我的世界基岩版")
             print(datetime.datetime.now().strftime('[date:%Y-%m-%d time:%H:%M:%S]') + "完成,正在执行删除旧版本目录操作/电脑上的网易我的世界基岩版")
@@ -263,20 +282,14 @@ class Frame(wx.Frame):
             shutil.rmtree(f"{windowsmc_path1}\\windowsmc", ignore_errors=True)
             shutil.rmtree(f"{desktop_path1}\\windowsmc", ignore_errors=True)
             os.system(f"del /f /s /q {desktop_path1}\\Minecraft.7z")
-            shutil.rmtree(f"{windowsmc_path1}\\windowsmc", ignore_errors=True)
-            shutil.rmtree(f"{desktop_path1}\\windowsmc", ignore_errors=True)
-            os.system(f"del /f /s /q {desktop_path1}\\Minecraft.7z")
-            shutil.rmtree(f"{windowsmc_path1}\\windowsmc", ignore_errors=True)
-            shutil.rmtree(f"{desktop_path1}\\windowsmc", ignore_errors=True)
-            os.system(f"del /f /s /q {desktop_path1}\\Minecraft.7z")
             self.read_debug.SetLabelText(datetime.datetime.now().strftime('[date:%Y-%m-%d time:%H:%M:%S]') + "完成,正在执行下载命令")
             print(datetime.datetime.now().strftime('[date:%Y-%m-%d time:%H:%M:%S]') + "完成,正在执行下载命令")
             logging.info("完成,正在执行下载命令")
             time.sleep(1)
-            print(datetime.datetime.now().strftime('[date:%Y-%m-%d time:%H:%M:%S]') + "Start_Aria2c_Download!")
-            logging.info("Start_Aria2c_Download!")
+            print(datetime.datetime.now().strftime('[date:%Y-%m-%d time:%H:%M:%S]') + "Start_GET_Download!")
+            logging.info("Start_GET_Download!")
             logging.info("Downloading...")
-            os.system(f"{pathx}\\aria2c.exe --out=Minecraft.7z -d {desktop_path1} {res1['url']}")
+            download(f"{res1['url']}",f"{desktop_path1}","Minecraft.7z")
             self.read_debug.SetLabelText(datetime.datetime.now().strftime('[date:%Y-%m-%d time:%H:%M:%S]') + "完成下载,正在执行解压命令")
             print(datetime.datetime.now().strftime('[date:%Y-%m-%d time:%H:%M:%S]') + "完成下载,正在执行解压命令")
             logging.info("完成下载,正在执行解压命令")
@@ -297,10 +310,10 @@ class Frame(wx.Frame):
             print(datetime.datetime.now().strftime('[date:%Y-%m-%d time:%H:%M:%S]') + "完成,正在下载.checkInfo文件")
             logging.info("完成,正在下载.checkInfo文件")
             time.sleep(1)
-            print(datetime.datetime.now().strftime('[date:%Y-%m-%d time:%H:%M:%S]') + "Start_Aria2c_Download!")
-            logging.info("Start_Aria2c_Download")
+            print(datetime.datetime.now().strftime('[date:%Y-%m-%d time:%H:%M:%S]') + "Start_GET_Download!")
+            logging.info("Start_GET_Download")
             logging.info("Downloading...")
-            os.system(f"{pathx}\\aria2c.exe --out=.checkInfo -d {desktop_path1} https://gitee.com/dai-junhao-123/Minecraft-windows-for-Netease-download/raw/main/.checkInfo")
+            download("https://gitee.com/dai-junhao-123/Minecraft-windows-for-Netease-download/raw/main/.checkInfo",f"{desktop_path1}",".checkInfo")
             self.read_debug.SetLabelText(datetime.datetime.now().strftime('[date:%Y-%m-%d time:%H:%M:%S]') + "完成,正在移动.checkInfo文件")
             print(datetime.datetime.now().strftime('[date:%Y-%m-%d time:%H:%M:%S]') + "完成,正在移动.checkInfo文件")
             logging.info("完成,正在移动.checkInfo文件")
@@ -317,13 +330,12 @@ class Frame(wx.Frame):
             logging.info("start_del!")
             logging.info("正在执行命令:del")
             os.system(f"del /f /s /q {desktop_path1}\\Minecraft.7z")
-            os.system(f"del /f /s /q {desktop_path1}\\Minecraft.7z")
             self.read_debug.SetLabelText(datetime.datetime.now().strftime('[date:%Y-%m-%d time:%H:%M:%S') + " All done]"+"完成!")
             print(datetime.datetime.now().strftime('[date:%Y-%m-%d time:%H:%M:%S') + " All done]" + "完成!\n")
             logging.info("完成,正在执行解禁按钮命令")
             self.OpenWeb.Enable()
-            self.Aria2c_Download.Enable()
-            self.zip_Aria2c_download.Enable()
+            self.GET_Download.Enable()
+            self.zip_GET_download.Enable()
             self.Minecrat_for_Netease.Enable()
             logging.info("Done!")
             Reload_stats = wx.MessageDialog(None, u"执行完成!", u"stats", wx.OK | wx.ICON_INFORMATION)

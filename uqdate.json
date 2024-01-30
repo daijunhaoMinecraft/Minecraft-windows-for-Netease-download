@@ -1,6 +1,6 @@
 {
-    "uqdate_version": "1.5_2",
-    "uqdate_msg": "1.修复了一些已知问题",
-    "uqdate_url": "https://mirror.ghproxy.com/https://github.com/daijunhaoMinecraft/Minecraft-windows-for-Netease-download/releases/download/1.5_2/Minecraft_Download_Bedrock_1.5_2.exe",
-    "uqdate_name": "Minecraft_Download_Bedrock_1.5_2.exe"
+    "uqdate_version": "1.5_3",
+    "uqdate_msg": "1.更新下载器(Aria2c→GET)",
+    "uqdate_url": "https://mirror.ghproxy.com/https://github.com/daijunhaoMinecraft/Minecraft-windows-for-Netease-download/releases/download/1.5_3/Minecraft_Download_Bedrock_1.5_3.exe",
+    "uqdate_name": "Minecraft_Download_Bedrock_1.5_3.exe"
 }

@@ -1,6 +1,5 @@
 # -*- coding:utf-8 -*-
 import json
-
 import wx
 import winreg
 import os
@@ -9,6 +8,8 @@ import requests
 import logging
 import datetime
 import time
+from tqdm.tk import tqdm
+requests.packages.urllib3.disable_warnings()
 
 def desktop_path():
     key = winreg.OpenKey(winreg.HKEY_CURRENT_USER, r'Software\Microsoft\Windows\CurrentVersion\Explorer\Shell Folders')
@@ -17,6 +18,15 @@ def desktop_path():
 desktop_path1 = desktop_path()
 
 logging.basicConfig(level=logging.INFO,filename=f'{desktop_path1}/Download_Netease_Bedrock_Debug.log',format=('%(asctime)s - %(levelname)s - %(message)s'))
+
+def download(url, save, name):
+    headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36 Edg/120.0.0.0'}
+    download_file = requests.get(url,headers=headers,verify=False,stream=True)
+    download_file_size = int(download_file.headers['Content-Length'])/1024
+    with open(file=f"{save}\\{name}", mode="wb") as f:
+        for data in tqdm(iterable=download_file.iter_content(1024),total=download_file_size,unit='k',desc=f"正在下载文件...[{name}]"):
+            f.write(data)
+
 
 class Frame(wx.Frame):
     def __init__(self):
@@ -34,7 +44,7 @@ class Frame(wx.Frame):
         self.Netease.Bind(wx.EVT_BUTTON,self.Netease_按钮被单击)
 
         # 当前版本
-        version = "1.5_1"
+        version = "1.5_3"
         # 更新检测
         header = {"content-type": "application/json"}
         logging.info(f"当前版本:{version}")
@@ -61,7 +71,7 @@ class Frame(wx.Frame):
                 print(datetime.datetime.now().strftime('[date:%Y-%m-%d time:%H:%M:%S]') + "Start_Wget_Download_Uqdate!")
                 logging.info("Start_Wget_Download_Uqdate")
                 logging.info("Downloading...")
-                os.system(f"{pathx}\\aria2c.exe -d --out={uqdate_name} -d {desktop_path1} {uqdate_url}")
+                download(f"{uqdate_url}",f"{desktop_path1}",f"{uqdate_name}")
                 print(datetime.datetime.now().strftime('[date:%Y-%m-%d time:%H:%M:%S]') + "完成,3秒后程序退出")
                 logging.info("完成,3秒后程序退出")
                 time.sleep(3)
